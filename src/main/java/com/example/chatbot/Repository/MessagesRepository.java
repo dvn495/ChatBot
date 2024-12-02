@@ -20,6 +20,7 @@ public interface MessagesRepository extends JpaRepository<Messages, Long> {
     @Query("SELECT DISTINCT new map(m.user.id as id, m.user.username as username, m.user.telefono as telefono) " +
             "FROM Messages m " +
             "WHERE m.horaMensaje BETWEEN :startOfDay AND :endOfDay")
-    List<Map<String, Object>> findDistinctUserDetailsByDateRange(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+    List<Map<String, Object>> findDistinctUserDetailsByDateRange(@Param("startOfDay") LocalDateTime startOfDay,
+                                                                 @Param("endOfDay") LocalDateTime endOfDay);
 
 }

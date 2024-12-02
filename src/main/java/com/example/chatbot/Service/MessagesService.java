@@ -36,18 +36,17 @@ public class MessagesService {
         messagesRepository.save(messages);
     }
 
-    public List<Map<String, Object>> getMessagesByDateRange(LocalDate date) {
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+    public List<Map<String, Object>> getMessagesByDateRange(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime startOfDay = startDate.atStartOfDay();
+        LocalDateTime endOfDay = endDate.atTime(LocalTime.MAX);
 
         return messagesRepository.findMessagesByDateRange(startOfDay, endOfDay);
     }
 
 
-    public List<Map<String, Object>> getUsersWhoWroteToday(){
-        LocalDate today = LocalDate.now();
-        LocalDateTime startOfDay = today.atStartOfDay();
-        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+    public List<Map<String, Object>> getUsersWhoWroteToday(LocalDate startDate, LocalDate endDate){
+        LocalDateTime startOfDay = startDate.atStartOfDay();
+        LocalDateTime endOfDay = endDate.atTime(LocalTime.MAX);
 
         return messagesRepository.findDistinctUserDetailsByDateRange(startOfDay, endOfDay);
 

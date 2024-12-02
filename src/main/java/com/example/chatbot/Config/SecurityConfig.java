@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 .requestMatchers("/user/**").permitAll()
                                 .requestMatchers("/messages/**").authenticated()
                                 .requestMatchers("/admin/**").permitAll()
+                                .requestMatchers("/password/**").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->
