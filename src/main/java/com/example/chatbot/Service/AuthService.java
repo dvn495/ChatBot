@@ -60,6 +60,7 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setTelefono(request.getTelefono());
         user.setCreation_time(LocalTime.now());
+        user.setCity(request.getCity());
         user.setRole(Role.USER);
 
         userRepository.save(user);

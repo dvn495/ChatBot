@@ -1,23 +1,32 @@
 package com.example.chatbot.Controller;
 
+import com.example.chatbot.Service.JwtService;
+import com.example.chatbot.Service.MessagesService;
+import com.example.chatbot.Service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.example.chatbot.Repository.UserRepository;
 import com.example.chatbot.Model.User;
+
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-
 @RestController
 public class UserController {
 
+    private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final MessagesService messagesService;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
+    public UserController(JwtService jwtService, UserRepository userRepository, MessagesService messagesService, UserService userService) {
+        this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.messagesService = messagesService;
+        this.userService = userService;
     }
 
     @GetMapping("/user/phone")
@@ -26,4 +35,59 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/user/age")
+    public ResponseEntity<String> addAgeByPhone(@RequestBody Map<String, Integer> requestData,
+                                                @RequestHeader("Authorization") String token) {
+        try {
+            Integer age = requestData.get("age");
+            // Validar y procesar el token
+            token = token.replace("Bearer", "").trim();
+
+            if (!jwtService.isTokenValid(token)) {
+                return ResponseEntity.status(401).body("Invalid Token or Expired");
+            }
+
+            String username = jwtService.getUsernameFromToken(token);
+
+            // Obtener el ID del usuario
+            Integer userId = userService.getByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
+
+            // Actualizar la edad del usuario
+            userService.updateAge(age, userId);
+
+            return ResponseEntity.ok("Age successfully updated");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/user/availability")
+    public ResponseEntity<String> addAvailabilityByPhone(@RequestBody Map<String, String> requestData,
+                                                @RequestHeader("Authorization") String token) {
+        try {
+            String availability = requestData.get("availability");
+            // Validar y procesar el token
+            token = token.replace("Bearer", "").trim();
+
+            if (!jwtService.isTokenValid(token)) {
+                return ResponseEntity.status(401).body("Invalid Token or Expired");
+            }
+
+            String username = jwtService.getUsernameFromToken(token);
+
+            // Obtener el ID del usuario
+            Integer userId = userService.getByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
+
+            // Actualizar la edad del usuario
+            userService.updateAvailability(availability, userId);
+
+            return ResponseEntity.ok("Age successfully updated");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body("Error: " + e.getMessage());
+        }
+    }
+
 }

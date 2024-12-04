@@ -20,22 +20,26 @@ public class AdminController {
     private MessagesService messagesService;
 
     @GetMapping("/messages/today")
-    public ResponseEntity<List<Map<String, Object>>> getTodayMessages(@RequestParam String start,
-                                                                      @RequestParam String end) {
+    public ResponseEntity<List<Map<String, Object>>> getTodayMessagesBucaramanga(@RequestParam String start,
+                                                                      @RequestParam String end,
+                                                                      @RequestParam String city) {
         LocalDate today = LocalDate.parse(start);
         LocalDate endDay = LocalDate.parse(end);
-        List<Map<String, Object>> messages = messagesService.getMessagesByDateRange(today, endDay);
+        List<Map<String, Object>> messages = messagesService.getMessagesByDateRange(today, endDay, city);
         return ResponseEntity.ok(messages);
     }
 
 
     @GetMapping("/users/today")
-    public List<Map<String, Object>> getUserWhoWroteToday(@RequestParam String start,
-                                                          @RequestParam String end){
+    public List<Map<String, Object>> getUserWhoWroteTodayBucaramanga(@RequestParam String start,
+                                                          @RequestParam String end,
+                                                          @RequestParam String city){
         LocalDate today = LocalDate.parse(start);
         LocalDate endDay = LocalDate.parse(end);
 
-        return messagesService.getUsersWhoWroteToday(today, endDay);
+        return messagesService.getUsersWhoWroteToday(today, endDay, city);
     }
+
+
 }
 
