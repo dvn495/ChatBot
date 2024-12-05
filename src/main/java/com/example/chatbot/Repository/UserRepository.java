@@ -29,5 +29,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     int updateAvailabilityAgeById(@Param("availability") String availability,
                           @Param("userId") Integer userId);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.contact_way = :contact_way WHERE u.id = :userId")
+    int updateContactMethod(@Param("contact_way") String contact_way,
+                                  @Param("userId") Integer userId);
+
 
 }

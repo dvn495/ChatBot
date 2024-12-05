@@ -38,6 +38,9 @@ public class User implements UserDetails {
     @Column(name ="availability")
     private String availability;
 
+    @Column(name ="contact_way")
+    private String contact_way;
+
 
     @Enumerated(EnumType.STRING)
     private Role role;

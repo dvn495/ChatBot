@@ -42,5 +42,14 @@ public class UserService {
         return rowsAffected;
     }
 
+    public int updateContact(String contactWay, Integer userId) {
+        int rowsAffected = userRepository.updateContactMethod(contactWay, userId);
+        if (rowsAffected == 0) {
+            throw new RuntimeException("No se pudo actualizar la edad. Usuario no encontrado.");
+        }
+        return rowsAffected;
+    }
+
+
 
 }

@@ -90,4 +90,32 @@ public class UserController {
         }
     }
 
+    @PostMapping("/user/contact")
+    public ResponseEntity<String> addContactWayByPhone(@RequestBody Map<String, String> requestData,
+                                                         @RequestHeader("Authorization") String token) {
+        try {
+            String contact_way = requestData.get("contact_way");
+            // Validar y procesar el token
+            token = token.replace("Bearer", "").trim();
+
+            if (!jwtService.isTokenValid(token)) {
+                return ResponseEntity.status(401).body("Invalid Token or Expired");
+            }
+
+            String username = jwtService.getUsernameFromToken(token);
+
+            // Obtener el ID del usuario
+            Integer userId = userService.getByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
+
+            // Actualizar la edad del usuario
+            userService.updateContact(contact_way, userId);
+
+            return ResponseEntity.ok("Age successfully updated");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body("Error: " + e.getMessage());
+        }
+    }
+
+
 }
