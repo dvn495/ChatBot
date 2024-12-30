@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import lombok.Data;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
+@Data
 @Service
 public class ChatHandler extends TextWebSocketHandler {
 
@@ -25,6 +26,9 @@ public class ChatHandler extends TextWebSocketHandler {
     private final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
     private final Map<String, Long> sessionLastRequestTime = new ConcurrentHashMap<>();
     private final OpenIAService openIAService;
+
+    private String userName;
+
     @Autowired
     private MessagesService messagesService;
     @Autowired
@@ -35,6 +39,8 @@ public class ChatHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         sessions.add(session);
+        String sessionId = session.getId();
+        openIAService.clearConversation(sessionId);
         LOGGER.info("Cliente conectado: {}", session.getId());
     }
 
@@ -42,6 +48,7 @@ public class ChatHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         sessions.remove(session);
         sessionLastRequestTime.remove(session.getId());
+        openIAService.clearConversation(session.getId());
         LOGGER.info("Cliente desconectado: {}", session.getId());
     }
 
@@ -68,7 +75,8 @@ public class ChatHandler extends TextWebSocketHandler {
 
             // Procesa el mensaje y envía la respuesta
             String userMessage = jsonMessage.getString("message");
-            String aiResponse = openIAService.getCustomGPTResponse(userMessage);
+            openIAService.setUserNameForSession(sessionId, userName);
+            String aiResponse = openIAService.getCustomGPTResponse(userMessage, sessionId);
             sendMessage(session, aiResponse);
 
         } catch (Exception e) {

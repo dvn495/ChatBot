@@ -39,7 +39,9 @@ public class SecurityConfig {
                                 .requestMatchers("/user/**").permitAll()
                                 .requestMatchers("/messages/**").authenticated()
                                 .requestMatchers("/admin/**").permitAll()
-                                .requestMatchers("/password/**").authenticated()
+                                .requestMatchers("/password/**").permitAll()
+                                .requestMatchers("/twilio/**").permitAll()
+                                .requestMatchers("/whatsapp/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->

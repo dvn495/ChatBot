@@ -2,6 +2,7 @@ package com.example.chatbot.Controller;
 
 import com.example.chatbot.Service.JwtService;
 import com.example.chatbot.Service.MessagesService;
+import com.example.chatbot.Service.OpenIAService;
 import com.example.chatbot.Service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

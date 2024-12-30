@@ -19,7 +19,7 @@ public interface MessagesRepository extends JpaRepository<Messages, Long> {
                                                                  @Param("city") String city);
 
 
-    @Query("SELECT DISTINCT new map(m.user.id as id, m.user.username as username, m.user.telefono as telefono, m.user.city as city, m.user.age as age, m.user.availability as availability) " +
+    @Query("SELECT new map(m.user.id as id, m.user.username as username, m.user.telefono as telefono, m.user.city as city, m.user.age as age, m.user.availability as availability, m.user.contact_way as contact_way) " +
             "FROM Messages m " +
             "WHERE m.horaMensaje BETWEEN :startOfDay AND :endOfDay " +
             "AND m.user.city = :city")

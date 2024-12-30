@@ -4,6 +4,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.time.Duration;  // Importación de Duration
 
@@ -25,9 +26,10 @@ public class JwtService {
 
     // Método para obtener el token
     public String getToken(UserDetails user) {
-        return getToken(new HashMap<>(), user);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("sessionId", UUID.randomUUID().toString()); // Generar sessionId único
+        return getToken(extraClaims, user);
     }
-
     // Método privado para crear un token con las reclamaciones adicionales
     private String getToken(Map<String, Object> extraClaims, UserDetails user) {
         return Jwts
@@ -50,6 +52,10 @@ public class JwtService {
     public String getUsernameFromToken(String token) {
         return getAllClaims(token).getSubject();
     }
+    public String getSessionIdFromToken(String token) {
+        return getClaim(token, claims -> claims.get("sessionId", String.class));
+    }
+
 
     // Verifica si el token es válido comparando con los detalles del usuario
     public boolean isTokenValid(String token, UserDetails userDetails) {

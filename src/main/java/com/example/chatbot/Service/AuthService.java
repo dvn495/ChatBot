@@ -23,12 +23,15 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private final OpenIAService openIAService;
+
     // Constructor manual para inyección de dependencias
     @Autowired
-    public AuthService(UserRepository userRepository, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public AuthService(UserRepository userRepository, JwtService jwtService, AuthenticationManager authenticationManager, OpenIAService openIAService) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.openIAService = openIAService;
     }
 
     public Optional<User> findUserByUsername(String username) {
@@ -48,6 +51,10 @@ public class AuthService {
         // Genera un token para el usuario autenticado
         String token = jwtService.getToken(user);
 
+        // openIAService.setUserName(request.getUsername());
+
+        // System.out.println(user.getUsername());
+
         // Crear AuthResponse sin builder
         AuthResponse response = new AuthResponse();
         response.setToken(token);
@@ -62,6 +69,9 @@ public class AuthService {
         user.setCreation_time(LocalTime.now());
         user.setCity(request.getCity());
         user.setRole(Role.USER);
+
+        // openIAService.setUserName(user.getUsername());
+        //System.out.println(user.getUsername());
 
         userRepository.save(user);
 

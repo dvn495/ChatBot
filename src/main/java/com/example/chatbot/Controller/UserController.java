@@ -1,8 +1,6 @@
 package com.example.chatbot.Controller;
 
-import com.example.chatbot.Service.JwtService;
-import com.example.chatbot.Service.MessagesService;
-import com.example.chatbot.Service.UserService;
+import com.example.chatbot.Service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +19,18 @@ public class UserController {
     private final MessagesService messagesService;
     private final UserService userService;
 
+    private final OpenIAService openIAService;
+
+    private final ChatHandler chatHandler;
+
     @Autowired
-    public UserController(JwtService jwtService, UserRepository userRepository, MessagesService messagesService, UserService userService) {
+    public UserController(JwtService jwtService, UserRepository userRepository, MessagesService messagesService, UserService userService, OpenIAService openIAService, ChatHandler chatHandler) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.messagesService = messagesService;
         this.userService = userService;
+        this.openIAService = openIAService;
+        this.chatHandler = chatHandler;
     }
 
     @GetMapping("/user/phone")
@@ -35,6 +39,27 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/user/username")
+    public ResponseEntity<String> setUsername(@RequestHeader("Authorization") String token) {
+        // Validar y procesar el token
+        token = token.replace("Bearer", "").trim();
+
+        if (!jwtService.isTokenValid(token)) {
+            return ResponseEntity.status(401).body("Invalid Token or Expired");
+        }
+
+        // Obtener el nombre de usuario del token
+        String username = jwtService.getUsernameFromToken(token);
+
+        // Establecer el nombre en una variable temporal
+        chatHandler.setUserName(username);
+
+        System.out.println(username);
+
+        return ResponseEntity.ok("Username successfully set");
+    }
+
 
     @PostMapping("/user/age")
     public ResponseEntity<String> addAgeByPhone(@RequestBody Map<String, Integer> requestData,
